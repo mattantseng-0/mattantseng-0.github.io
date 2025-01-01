@@ -7,7 +7,7 @@ permalink: /about/
 
 ## About
 
-{% for member in site.data.pi %}
+{% for member in site.data.my_data %}
 
 <div class="jumbotron">
 <div class="row">
@@ -34,9 +34,26 @@ permalink: /about/
 </div>
 {% endfor %}
 
-{% if site.data.grants %}
+{% if site.data.experience %}
 
 <div class="jumbotron">
+  <h3>Work Experience</h3>
+  <ul>
+    {% for experience in site.data.experience %}
+      <li>{{experience.title}} {{tab}}</li>
+      <ul>
+        <li>{{experience.date}}</li>
+        <li>{{experience.affiliation}}</li>
+      </ul>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
+
+{% if site.data.grants %}
+
+<div class="jumbotron"> 
   <h3>Grants</h3>
   <ul>
     {% for grant in site.data.grants %}

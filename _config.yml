@@ -12,17 +12,17 @@ url: ""
 
 # Footer info
 affiliation: >
-  Richard Feynman<br/>
-  Professor of Physics<br/>
-  California Institute of Technology
+  Mattan Tseng<br/>
+  Graduate Research Assistant<br/>
+  The University of Alabama in Huntsville
 
 location: >
   Huntsville Alabama<br/>
 
 
 contact: >
-  <a href="mailto:mattan.tseng@gmail.com" target="_blank"><i class="fa fa-envelope fa-1x"></i> Contact Mattan via email</a> <br/>
-# <a href="https://github.com/sbryngelson/academic-website-template"><i class="fa fa-github fa-1x"></i> Use this site as a template!</a>
+  <a href="mailto:mattan.tseng@gmail.com" target="_blank"><i class="fa fa-envelope fa-1x"></i>  Email</a> <br/>
+  <a href="https://www.linkedin.com/in/mattan-tseng-744829165/"><i class="fa fa-linkedin fa-1x"></i>  Linkedin</a>
 
 # Pages shown in navbar
 nav_pages:
