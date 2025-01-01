@@ -1,5 +1,5 @@
 <div>
-{% for member in site.data.pi %}
+{% for member in site.data.my_data %}
 <div class="jumbotron">
    <center>
    <a href="{{site.url}}{{site.baseurl}}/about"><img src="{{site.url}}{{site.baseurl}}/images/{{ member.photo }}" width="60%" style="block:inline; margin-left:auto; margin-right:auto; margin-bottom:5px;"/></a>
@@ -24,13 +24,13 @@
 </div>
 
 <div class="jumbotron">
-  <h4>News</h4>
+  <h4>Projects</h4>
 
-  {% for article in site.data.news limit:3 %}
-  <b>{{ article.date }}</b>
-    <p>{{ article.headline }}</p>
+  {% for project in site.data.projects limit:3 %}
+  <b>{{ project.date }}</b>
+    <p>{{ project.headline }}</p>
   {% endfor %}
   
-  <h5><a href="{{ site.url }}{{ site.baseurl }}/allnews.html">... see all News</a></h5>
+  <h5><a href="{{ site.url }}{{ site.baseurl }}/allprojects.html">... see all Projects</a></h5>
 
 </div>
