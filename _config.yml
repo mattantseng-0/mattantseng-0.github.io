@@ -1,7 +1,7 @@
 # Site settings
-title: Richard Feynman
-email: richard@university.edu
-description: Academic webpage of Dr. Richard Feynman
+title: Mattan Tseng
+email: mattan.tseng@gmail.com
+description: Personal Website of Mattan Tseng
 baseurl: ""
 url: ""
 
@@ -17,24 +17,19 @@ affiliation: >
   California Institute of Technology
 
 location: >
-  California Institute of Technology<br/>
-  1200 E California Blvd<br/>
-  Pasadena, CA 91125
+  Huntsville Alabama<br/>
+
 
 contact: >
-  <a href="mailto:richard@university.edu" target="_blank"><i class="fa fa-envelope fa-1x"></i> Contact Richard via email</a> <br/>
-  <a href="https://github.com/sbryngelson/academic-website-template"><i class="fa fa-github fa-1x"></i> Use this site as a template!</a>
+  <a href="mailto:mattan.tseng@gmail.com" target="_blank"><i class="fa fa-envelope fa-1x"></i> Contact Mattan via email</a> <br/>
+# <a href="https://github.com/sbryngelson/academic-website-template"><i class="fa fa-github fa-1x"></i> Use this site as a template!</a>
 
 # Pages shown in navbar
 nav_pages:
   - name: about
   - name: publications
-  - name: talks
   - name: research
-  - name: software
-  - name: team
-  - name: teaching
-  - name: blogs
+  - name: photography
 
 include:
   - .htaccess
@@ -62,8 +57,8 @@ kramdown:
 plugins: ["jekyll/scholar"]
 
 scholar:
-  last_name: Doe
-  first_name: [John]
+  last_name: Tseng
+  first_name: [Mattan]
 
   style: citesty
   locale: en
