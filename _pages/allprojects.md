@@ -10,7 +10,7 @@ permalink: /allprojects.html
 <ul>
 {% for post in site.posts %}
     <div class="jumbotron">
-        <li>{{ post.date | date_to_string }}: <a href="{{ site.url }}{{ site.baseurl }}{{ post.url }}">{{ post.title}}</a></li>
+        <a href="{{ site.url }}{{ site.baseurl }}{{ post.url }}">{{ post.title}}</a>
     </div>
 {% endfor %}
 </ul>
