@@ -2,10 +2,16 @@
 title: "Projects"
 layout: gridlay
 sitemap: false
-permalink: /projects/
+permalink: /projects.html
 ---
 
 # Projects
 
-<!-- {% for article in site.data.news %} {{ article.date }}
-{{ article.headline }} {% endfor %} -->
+<ul>
+{% for post in site.posts %}
+    <div class="jumbotron">
+        <a href="{{ site.url }}{{ site.baseurl }}{{ post.url }}">{{ post.title}}</a>
+    </div>
+{% endfor %}
+</ul>
+
