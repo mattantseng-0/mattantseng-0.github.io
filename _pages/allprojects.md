@@ -1,17 +1,20 @@
 ---
-title: "Projects"
-layout: textlay
+title: "team"
+layout: gridlay
 sitemap: false
 permalink: /allprojects.html
 ---
 
-## Projects
+## ALL PROJECTS
 
-<div class="jumbotron">
-{% for project in site.data.projects %}
-<b>{{ project.date }}</b>
 
-{{ project.title }}
+
+<ul>
+{% for post in site.posts %}
+    <div class="jumbotron">
+        <li>{{ post.date | date_to_string }}: <a href="{{ site.url }}{{ site.baseurl }}{{ post.url }}">{{ post.title}}</a></li>
+    </div>
 {% endfor %}
+</ul>
 
-</div>
+
