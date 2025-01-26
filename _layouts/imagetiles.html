@@ -1,27 +1,16 @@
 ---
-title: "Photography"
-layout: gridlay
-sitemap: false
-permalink: /photography/
+layout: default
 ---
+<div class = "image-mosaic">
+    {% for image in site.static_files %}
+        {% if image.extname == ".jpg" and image.path contains"/assets/images/mosaic/"}
+            <div class="mosaic-item">
+                <img src="{{ image.path | relative_url }}" alt = "Mosaic Image">
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>
 
-<ul>
-{% for post in site.posts %}
-    <div class="jumbotron">
-        <a href="{{ site.url }}{{ site.baseurl }}{{ post.url }}">{{ post.title}}</a>
-    </div>
-{% endfor %}
-</ul>
-<!-- 
-<ul>
-{% for image in site.static_files %}
-    {% if image.extname == ".jpg" and image.path contains"/assets/images/mosaic/"}
-      <div class="mosaic-item">
-          <img src="{{ image.path | relative_url }}" alt = "Mosaic Image">
-      </div>
-    {% endif %}
-{% endfor %}
-</ul> -->
 
 <style>
     .image-mosaic {
