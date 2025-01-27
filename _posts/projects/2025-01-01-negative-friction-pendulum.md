@@ -148,6 +148,36 @@ It should be noted that in Fig. \ref{fig:negative_friction} when the pendulum cr
 
 ## Real World Implementation
 
+### Motor Characteristics
+
+In previous sections, we have created a theoretical math model for the switched pendulum. While the derivation of the complete electromechanical math model is outside the scope of this paper, it is necessary to prove that it is physically possible to create a pendulum with negative friction. 
+
+\subsection{Motor Characteristics}
+In our switched pendulum we will use a DC motor to make the connection between the electrical and mechanical components of our system. The DC motor will allow us to alter the friction of the system and apply an external moment to shift the fixed point away from zero. 
+
+When the stator of the motor is rotated, the motion of the stator moving by the coils of the motor results in an induced voltage called back emf. The back emf will be the the mechanism that allows us to increase the friction of the system. Based on information found in the datasheets of most DC motors, the following equation can be used to determine the magnitude of the back emf \cite{noauthor_permanent_nodate}: 
+
+\begin{equation}
+    V_b(t) = K_B \frac{d\theta}{dt}
+    \label{eq:back_emf}
+\end{equation}
+\begin{center}
+    \textit{$V_b$ = back voltage, $K_b$ = motor back emf constant}
+\end{center}
+
+Next, we know that supplying current to the motor causes rotation. The motor torque constant can be used to calculate the torque being applied to the pendulum as a function of current \cite{noauthor_permanent_nodate}. 
+
+\begin{equation}
+    \tau_{motor} = K_m*i
+    \label{eq:motor_torque}
+\end{equation}
+\begin{center}
+    \textit{$K_m$ = motor torque constant, $i$ = current}
+\end{center}
+
+While not explicitly used in this paper, Eq. \ref{eq:motor_torque} will be used to determine the necessary current supply to set the fixed points of the switched pendulum.
+
+
 
 ### Negative Resistors and Negative Friction
 
