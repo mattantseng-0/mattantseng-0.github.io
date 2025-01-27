@@ -29,7 +29,7 @@ concurrency:
 jobs:
   # Build job
   build:
-    runs-on: ubuntu-latest # ubuntu-22.04# see: https://github.com/actions/runner-images/issues/10636 for more information
+    runs-on:  ubuntu-22.04 # ubuntu-latest # see: https://github.com/actions/runner-images/issues/10636 for more information
     steps:
       - name: Checkout
         uses: actions/checkout@v4
