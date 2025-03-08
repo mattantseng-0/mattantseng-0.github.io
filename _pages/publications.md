@@ -16,6 +16,36 @@ years: [2016, 2017, 2018, 2019, 2020, 2021]
 }
 </style>
 
+<style>
+.post-link {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  width: 100%;
+}
+</style>
+
+<style>
+.post-title {
+  flex: 1;
+  font-size: 1.5em;
+  padding-right: 1em; /* Add space between title and thumbnail */
+}
+</style>
+
+<style>
+.thumbnail {
+  max-width: 10px; /* Adjust size as needed */
+  height: auto;
+  border-radius: 5px; /* Optional: add rounded corners */
+}
+</style>
+
+
+
+
 <!-- <div class="jumbotron">
 ### Preprints
 {% bibliography --query @unpublished %}

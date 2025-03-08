@@ -4,6 +4,7 @@ layout: gridlay
 date: 2025-01-01
 sitemap: false
 permalink: /projects/negative_friction_pendulum
+thumbnail: "/images/project_images/negative_friction_pendulum/raised_pendulum.png"
 ---
 
 # Negative Friction Pendulum
