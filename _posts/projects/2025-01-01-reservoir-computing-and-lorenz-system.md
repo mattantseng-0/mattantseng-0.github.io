@@ -296,11 +296,11 @@ for i in range(1, np.shape(lorenz_training_data)[1]):
 
 
 
-
-
-
 #### Taking Care of the Transient
-<img src="../../images/project_images/rc_and_lorenz/reservoir_output_with_transient.png" style="display:inline-block; width:45%;"> <img src="../../images/project_images/rc_and_lorenz/reservoir_output_without_transient.png" style="display:inline-block; width:45%;">
+
+Before we fit our model to the data, we need to remove the effects of our random weight instantiation. The following figure entitled _Reservoir States WITH Transient_, shows the output of the reservoir and illustrates the effect of the random instantiation. Notice that the output of the reservoir is different for the first $\approx 50$ indices. After this timeframe, the behavior settles down into a steady state behavior. If we were to include this transient in the training method, we would be negatively affected by our random instantiation. To resolve this issue, we truncate the reservoir outputs and, in this case, remove the first 100pts to ensure that the transient effects are removed (shown on the right).
+
+<img src="../../images/project_images/rc_and_lorenz/reservoir_output_with_transient.png" style="display:inline-block; width:45%;"> <img src="../../images/project_images/rc_and_lorenz/reservoir_output_without_transient.png" style="display:inline-block; width:48%;">
 
 #### Training the LI-ESN
 
@@ -315,6 +315,8 @@ readout_weights = (S_cross@lorenz_target_data.T).T
 ```
 
 #### Generating an Output from the Model
+
+In order to recursively generate an output from our model
 
 ```python
 # For this example, let's graph the last point in our training data and use this as our starting point. 
@@ -358,6 +360,12 @@ for i in np.arange(1, num_steps_to_generate):
     # print(predictions[i, :])
 ```
 
+
+
+# THIS IS A TEST
+{% raw %}
+<pre> ```mermaid graph TD; A[Start] --> B{Is it working?}; B -- Yes --> C[Celebrate!]; B -- No --> D[Fix it]; ``` </pre>
+{% endraw %}
 
 
 
