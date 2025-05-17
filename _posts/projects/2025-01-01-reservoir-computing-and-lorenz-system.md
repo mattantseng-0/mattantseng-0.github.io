@@ -1,5 +1,5 @@
 ---
-title: "Reservoir Computing & The Lorenz System"
+title: "Hands-On Tutorial: Leaky Integrator Echo State Network"
 layout: gridlay
 date: 2025-01-01
 sitemap: false
@@ -7,29 +7,46 @@ permalink: /projects/reservoir_computing_lorenz
 thumbnail: "/images/project_images/rc_and_lorenz/lorenz_3d.png"
 ---
 
-# Reservoir Computing & The Lorenz System
+# Hands-On Tutorial: Leaky Integrator Echo State Network
 
 ## Motivation
+
+This article presents a hands on tutorial for how to create a simple implementation of the Leaky Integrator Echo State Network (LI-ESN) in Python. Some amount of theory and intuition is provided throughout, however the reader is directed to the following papers for a more complete explanation of the LI-ESN architecture and reservoir computing (RC) as a whole.
 
 ## Theory
 ### Reservoir Computing
 
-The equation for the Leaky Integrator Echo State Network is: 
+The following figure from [TODO: Add citation] shows the high level signal flow for an RC. The input matrix is a randomly instantiated matrix that matches the dimension of the input data to the size of the reservoir. 
+
+<img src="../../images/project_images/rc_and_lorenz/LI_ESN_Architecture.png" alt="Pendulum with different damping behavior" width="100%"/>
+
+The Reservoir is a dynamical system that evolves according to some nonlinear equation. For the Leaky Integrator Echo State Network, that nonlinear equation is as follows:
 
 $$
 x(t) = (1-a)x(t) + a\times \tanh(W_{in}u(t) + \hat{W}x(t-1))
 $$
 
-This equation can also be described by considering tha matrix dimensions: 
+Finally, the readout matrix remaps the output of the Reservoir into some predicted output. For this tutorial, we will be making a 1-step forecast based on the given input.
+
+This architecture can also be described by considering the matrix dimensions: 
 
 $$
 [I][I\times R][R \times O] = [O]
 $$
 
-## The Echo State Property
+### The Echo State Property
+
+Now you might be wondering: Can the Reservoir be *any* nonlinear system? It's generally accepted in literature that the Reservoir should exhibit certain characteristics [TODO: Add citation]: 
+
+- The system should forget its initial conditions
+- The current output of the system should reflect the current input
+- The system should forget old inputs
+
 
 
 ### The Lorenz System
+
+The Lorenz System will be used as a test case for the LI-ESN. Originally introduced in [TODO: Cite] as a simplistic model for convective behavior, the Lorenz System has become almost synonomous with the field of nonlinear dynamics and chaos. The equations for the Lorenz System are shown in the following:
 
 $$
 \begin{split}
@@ -47,6 +64,14 @@ The standard weights for the Lorenz System is shown in the following table.
 
 
 ## Methods
+
+At a high level, the process of creating an LI-ESN and applying it to the Lorenz system is as follows:
+
+- Create dataset
+- Run training data through reservoir in open-loop configuration
+- Train readout matrix
+- Autonomously run system in closed-loop configuration
+
 ### Setting up the Python Environment
 
 The package requirements are minimal for this project. The only packages necessary are `numpy`, `scipy` and `matplotlib`
@@ -225,6 +250,7 @@ transient = 100
 
 #### Defining the Input and Reservoir Matrices
 
+We will start by instantiating two matrices. 
 
 ```python
 # First: Define the input matrix
@@ -304,11 +330,24 @@ Before we fit our model to the data, we need to remove the effects of our random
 
 #### Training the LI-ESN
 
+Now that we have the reservoir states for each of the training inputs, all we need to do is use the readout matrix to fit these states to the training targets. The equation will look like: 
+
+$$
+b = Ax
+$$
+
+Where $b$ are the training targets, $A$ are the reservoir states that we created in the previous section and $x$ is the readout matrix that we are trying to create. Using the Moore-Penrose Psuedoinverse, we get the following: 
+
+$$
+x = A^\dagger b
+$$
+
+Solving this equation gives $x$ which is the necessary readout matrix for our training. The following shows the python code necessary to complete the training:
+
 
 ```python
 # Take the pseudo inverse of the reservoir states
 S_cross = np.linalg.pinv(reservoir_states)
-
 
 # Multiply the pseudo inverse with the target outputs to determine the readout weights 
 readout_weights = (S_cross@lorenz_target_data.T).T
@@ -316,27 +355,24 @@ readout_weights = (S_cross@lorenz_target_data.T).T
 
 #### Generating an Output from the Model
 
-In order to recursively generate an output from our model
+In order to recursively generate an output from our model, we are going to use the readout matrix that we just trained to close the loop and the nth output becomes the n+1 input.  
 
 ```python
-# For this example, let's graph the last point in our training data and use this as our starting point. 
-# We could also grab any other point in our lorenz system.
-# initial_conditions = lorenz_target_data[:, 1234]
-
+# define the initial conditions
 initial_conditions = np.random.normal(0, 1, [3, ])
 
-
-print(np.shape(initial_conditions))
-
+# how many iterates do you want to run the system for?
 num_steps_to_generate = 10000
 
+# instantiate memory location for the output
 output = np.zeros([num_steps_to_generate, input_size])
 
+# assign the initial condition
 output[0, :] = initial_conditions
 
+# instantiate memory for the reservoir states
 inference_reservoir_states = np.zeros((num_steps_to_generate, reservoir_size))
 inference_reservoir_states[0, :] = reservoir_states[-1, :]
-
 
 
 for i in np.arange(1, num_steps_to_generate):
@@ -361,11 +397,34 @@ for i in np.arange(1, num_steps_to_generate):
 ```
 
 
+When we run the above code, we generate outputs for $x, y, z$. Because we scaled our training data, these values are still scaled between $[-1, +1]$. The last step we need to perform is correct this scaling factor: 
 
-# THIS IS A TEST
-{% raw %}
-<pre> ```mermaid graph TD; A[Start] --> B{Is it working?}; B -- Yes --> C[Celebrate!]; B -- No --> D[Fix it]; ``` </pre>
-{% endraw %}
+```python
+properly_scaled_output = output.T
+
+properly_scaled_output[0, :] *= x_scaling_factor
+properly_scaled_output[1, :] *= y_scaling_factor
+properly_scaled_output[2, :] *= z_scaling_factor
+
+properly_scaled_output[0, :] += x_amp_shift
+properly_scaled_output[1, :] += y_amp_shift
+properly_scaled_output[2, :] += z_amp_shift
+```
+
+Now, we can plot the results to look at the time series of our generated output: 
+
+<img src="../../images/project_images/rc_and_lorenz/recursively_generated_outputs.png" alt="resulting output" width="80%"/>
+
+Additionally, the 3D attractor plots can also be shown.
+
+<img src="../../images/project_images/rc_and_lorenz/recursively_generated_attractors.png" alt="resulting output" width="80%"/>
+
+In the time series plot, we see the same anitpodal symmetry in the $x$ and $y$ channels and the attractor plot shows the familiar butterfly wings. These qualitative observations show that the LI-ESN was generally able to learn the shape and behavior of the Lorenz System.
+
+
+
+
+
 
 
 
