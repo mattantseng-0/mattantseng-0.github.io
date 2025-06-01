@@ -44,17 +44,21 @@ years: [2016, 2017, 2018, 2019, 2020, 2021]
 </style>
 
 
-
-
 <!-- <div class="jumbotron">
 ### Preprints
 {% bibliography --query @unpublished %}
 </div> -->
 
 <div class="jumbotron">
-### Published articles
+### Journal Articles
 {% bibliography --query @article %}
 </div>
+
+<div class="jumbotron">
+### Conference Proceedings
+{% bibliography --query @proceedings %}
+</div>
+
 
 <div class="jumbotron">
 ### Master's Thesis
