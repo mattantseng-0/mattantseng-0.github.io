@@ -4,6 +4,21 @@
 
 $baseurl: "{{ site.url }}{{ site.baseurl }}";
 
+// Table formatting
+table {
+  border-collapse: collapse;
+//   width: 100%;
+}
+
+table, th, td {
+  border: 1px solid #ccc;
+}
+
+th, td {
+  padding: 10px;
+  text-align: left;
+}
+
 // @import "variables";
 @import "bootstrap/bootstrap";
 // @import "syntax-highlighting";

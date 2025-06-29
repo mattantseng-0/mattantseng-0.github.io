@@ -11,6 +11,8 @@ thumbnail: "/images/project_images/negative_friction_pendulum/raised_pendulum.pn
 
 ## Motivation
 
+This work is a small part of some preliminary research with Dr. Ned Corron And Dr. Aubrey Beal. 
+
 Pendulums can be found in many physics or engineering classrooms. The simple mechanism is an excellent tool to illustrate, among other things, angular motion, conservation of energy, and periodicity. The main goal of this project is to take a normal, damped pendulum, and apply a negative impedance converter to create a pendulum with *negative* friction.
 
 ## Theory

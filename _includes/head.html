@@ -5,6 +5,8 @@
 
   <title>{% if page.title %}{{ page.title | escape }} - {{ site.title | escape }}{% else %}{{ site.title | escape }}{% endif %}</title>
   <meta name="description" content="{{ site.description }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/rouge/4.2.0/themes/colorful.min.css">
+
   <link rel="stylesheet" href="{{ "/assets/main.css" | relative_url }}">
   <link rel="canonical" href="{{ page.url | replace:'index.html','' | prepend: site.baseurl | prepend: site.url }}">
   <link rel="shortcut icon" type ="image/x-icon" href="{{ site.url }}{{ site.baseurl }}/favicon.ico">
@@ -15,11 +17,60 @@
   <link rel="preconnect" href="https://i.vimeocdn.com">
   <link rel="preconnect" href="https://f.vimeocdn.com">
 
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true });
+  </script>
+
 
 {% if jekyll.environment == 'production' %}
 {% include analytics.html %}
 {% endif %}
 
 {% include mathjax.html %}
+
+
+<style>
+  /* Simple embedded syntax highlighting for Rouge */
+  
+  .highlight pre { background: #2d2d2d; padding: 1em; border-radius: 8px; overflow: auto; }
+  .highlight .c { color: #999988; font-style: italic; }      /* comment */
+  .highlight .k { color: #cc99cd; }                          /* keyword */
+  .highlight .o { color: #f2777a; }                          /* operator */
+  .highlight .cm { color: #999988; font-style: italic; }     /* comment multiline */
+  .highlight .cp { color: #999999; }                         /* preprocessor */
+  .highlight .c1 { color: #999988; font-style: italic; }     /* comment single */
+  .highlight .cs { color: #999999; font-style: italic; }     /* comment special */
+  .highlight .gd { color: #f2777a; }                         /* deletion */
+  .highlight .ge { font-style: italic; }
+  .highlight .gh { color: #ffffff; font-weight: bold; }
+  .highlight .gi { color: #99cc99; }                         /* insertion */
+  .highlight .go { color: #cccccc; }                         /* output */
+  .highlight .gp { color: #cccccc; }
+  .highlight .gr { color: #f2777a; }
+  .highlight .gs { font-weight: bold; }
+  .highlight .gt { color: #f2777a; }
+  .highlight .kc { color: #cc99cd; }
+  .highlight .kd { color: #cc99cd; }
+  .highlight .kn { color: #f99157; }
+  .highlight .kp { color: #cc99cd; }
+  .highlight .kr { color: #cc99cd; }
+  .highlight .kt { color: #ffcc66; }
+  .highlight .m { color: #f99157; }                          /* number */
+  .highlight .s { color: #99cc99; }                          /* string */
+  .highlight .na { color: #6699cc; }
+  .highlight .nb { color: #f2777a; }
+  .highlight .nc { color: #ffcc66; }
+  .highlight .no { color: #f2777a; }
+  .highlight .nd { color: #f2777a; }
+  .highlight .ni { color: #f2777a; }
+  .highlight .ne { color: #f2777a; }
+  .highlight .nf { color: #6699cc; }                         /* function */
+  .highlight .nl { color: #f2777a; }
+  .highlight .nn { color: #ffcc66; }
+  .highlight .nt { color: #f2777a; }
+  .highlight .nv { color: #f2777a; }
+  .highlight .w { color: #ffffff; }
+  </style>
 
 </head>
