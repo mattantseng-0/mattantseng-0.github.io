@@ -1,7 +1,7 @@
 ---
 title: "Hands-On Tutorial: Leaky Integrator Echo State Network"
 layout: gridlay
-date: 2025-01-01
+date: 2025-06-01
 sitemap: false
 permalink: /projects/reservoir_computing_lorenz
 thumbnail: "/images/project_images/rc_and_lorenz/lorenz_3d.png"
@@ -132,7 +132,7 @@ sigma = 10
 beta = 8/3
 ```
 
-Now we need to define the duration, sampling rate and initial conditions for the system. We will use a random number to instantiate the $x$ initial condition. This will ensure that every time we run this simulation, we get a different time series. There's no real functional necessity for this random instantiation, however it does serve to illustrate a level of robustness that the LI-ESN works regardless of initial condition.
+Now we need to define the duration, sampling rate and initial conditions for the system. We will use a random number to instantiate the $x$ initial condition. This will ensure that every time we run this simulation, we get a different time series. There's no functional necessity for this random instantiation, however it does serve to illustrate a level of robustness that the LI-ESN works regardless of initial condition.
 
 
 ```python
@@ -158,19 +158,19 @@ z = lorenz_soln.y[2, :]
 
 ```
 
-At this point, we have now created the time series data that we can use to train our LI-ESN model. Before we move on to creating the reservoir computing model, let's make some plots of our data to visualize this system.
+At this point, we have created the time series data that can be used to train the LI-ESN model. Before moving on to creating the reservoir computing model, let's make some plots of our data to visualize this system.
 
-We have already seen the 3D butterfly attractor for this system, so let's plot the time series for the $x$, $y$ and $z$ channels. One key observation about this time series plot is that the $x$ and $y$ channels exhibit antipodal symmetry.
+We have already seen the 3D butterfly attractor for this system, so let's plot the time series for the $x$, $y$ and $z$ channels. One key observation about this time series plot is that the $x$ and $y$ channels exhibit antipodal symmetry much like a communications waveform.
 
 <img src="../../images/project_images/rc_and_lorenz/lorenz_xyz_ts.png" alt="Pendulum with different damping behavior" width="80%"/>
 
 ### Data Preprocesing
 
-Now that we have created the data set for the Lorenz system, we need to apply some processing operations before we can train on this data. 
+Now that the Lorenz system dataset has been created, it is necessary to apply some processing operations before training the model.
 
 #### Scaling
 
-Recall that in the equation for the LI-ESN model we have a hyperbolic-tangent function. The following figure shows the plot of $y = tanh(x)$. Notice that for large $\|x\|$ the function is almost a constant. We want the inputs of our system to exist in the active region of the function and not on the near-constant tails. Consequently, the first operation we need to perform on our data is to scale it to the range $[-1, +1]$. 
+Recall that the equation for the LI-ESN model contains a hyperbolic-tangent function. The following figure shows the plot of $y = tanh(x)$. Notice that for large $\|x\|$ the function is almost a constant. To create an input conducive to this nonlinear function, the magnitude of the data should exist in the active region and not on the near-constant tails. Consequently, the first processing operation performed is to scale the inputs to the range $[-1, +1]$. 
 
 
 <img src="../../images/project_images/rc_and_lorenz/tanh_plot.png" alt="tanh plot" width="80%"/>
@@ -204,9 +204,9 @@ lorenz_data[2, :] /= z_scaling_factor
 
 #### Training Inputs/Outputs
 
-To determine how we want to format our training data, we need to consider what task we want the LI-ESN accomplish. For this article, we are going to have the input be the state of the system $X[n]$ and the ouput will be the predicted next step $X'[n+1]$. Creating a system that predicts the $X'[n+1]$ value will allow us to feed the output of the LI-ESN model back to the input and recursively run our model. 
+To determine how we want to format our training inputs and targets, we need to consider what task we want the LI-ESN accomplish. For this article, we are going to have the input be the state of the system $X[n]$ and the ouput will be the predicted next step $X'[n+1]$. Creating a system that predicts the $X'[n+1]$ value will allow us to feed the output of the LI-ESN model back to the input and recursively run our model. 
 
-An example of an alternate task that can be performed by an LI-ESN model is the prediction of an unknown state variable. For example, for an input: $X[n] = [x[n], y[n]]$ and output $z[n]$, the LI-ESN can be trained to predict $z'[n]$ for a given pair of $x[n]$, $y[n]$ values.
+An example of an alternate task that can be performed by an LI-ESN model is the prediction of an unknown state variable. For example, for an input: $X[n] = [x[n], y[n]]$ and training target $z[n]$, the LI-ESN can be trained to predict $z'[n]$ for a given pair of $x[n]$, $y[n]$ values.
 
 
 Now that we know what we want our model to accomplish, we can create our input/output datasets that can be used for training. The following lines of Python will create the `lorenz_training_data` that corresponds with the $X[n]$ samples and the `lorenz_target_data` that corresponds with the $X[n+1]$ samples. By training the output of the LI-ESN with the $X[n+1]$ data, we can train it to predict these values for a given input.
@@ -224,7 +224,7 @@ lorenz_target_data = np.copy(lorenz_subset[:, 1:])
 
 #### Additive Noise
 
-Now that the data has been scaled and centered to fit in the sensitive region of $\tanh$, and we have split our data into training inputs and outputs, the next step is to add noise to the training input data. The reason we want to add noise to the training inputs is to make our system more robust. When we train on noisy inputs, the LI-ESN model will learn how to accept some amount of variance in the input information. That way, when one of our inputs isn't quite what the model expects, it still knows how to generate a valid output. The following Python will add Guassian noise to the training input data. In this case, we are using noise with $\sigma = 0.05$ and $\mu = 0$.
+Now that the data has been scaled and centered to fit in the sensitive region of $\tanh$, and we have split our data into training inputs and targets, the next step is to add noise to the training input data. The reason we want to add noise to the training inputs is to make our system more robust. When we train on noisy inputs, the LI-ESN model will learn how to accept some amount of variance in the input information. That way, when one of our predicted inputs isn't exactly what the model expects, it still knows how to generate a valid output. The following Python will add Gaussian noise to the training input data. In this case, the noise is defined with $\sigma = 0.05$ and $\mu = 0$.
 
 ```python
 
@@ -252,7 +252,7 @@ Congratulations, you have made it through all of the pre-work. Now it is time to
 Before we get started, we need to define some constants that will be used for our LI-ESN model. 
 
 - Reservoir Size:
-    - The reservoir is an $M\times M$ matrix
+    - The reservoir is an $R\times R$ matrix
 - Input Size:
     - The input size is the dimension of the input data. In our case, we have three state variables $[x, y, z]$
 - Spectral Radius:
@@ -260,7 +260,7 @@ Before we get started, we need to define some constants that will be used for ou
 - Leaky Integrator Factor: 
     - The Leaky Integrator Factor helps match the time scale of our reservoir to the time scale of the system as well as ensure stability of the reservoir.
 - Transient:
-    - Since we are instantiate our reservoir with random noise, the transient is used to wash out the effects of this random instantiation.
+    - Since the reservoir is instantiated with random noise, the transient is used to wash out the effects of this random instantiation.
 
 ```python
 reservoir_size = 1000
@@ -337,7 +337,7 @@ reservoir_weights = spectral_radius * reservoir_weights
 
 ### Train Readout Matrix
 
-At this point in the article, we have discussed background, created a training dataset and finally defined the input and reservoir matrices necessary to the LI-ESN system. It is now time to train the Readout Matrix so we can make our predictions.
+At this point in the article, we have discussed background, created a training dataset and finally defined the input and reservoir matrices necessary to the LI-ESN system. It is now time to train the readout matrix so we can make our predictions.
 
 
 #### Input Training Data
@@ -363,7 +363,7 @@ for i in range(1, np.shape(lorenz_training_data)[1]):
 ```
 #### Taking Care of the Transient
 
-Before we use linear regression to fit our Output Matrix to the data, we need to remove the effects of our random weight instantiation. The following figure entitled _Reservoir States WITH Transient_, shows the output of the reservoir and illustrates the effect of the random instantiation. Notice that the output of the reservoir appears different for the first $\approx 50$ indices (see the left side of the image). After this timeframe, the behavior settles down into a consistent behavior. If we were to include this transient in the training, we would be negatively affected by the random instantiation of our dynamical reservoir. To resolve this issue, we truncate the reservoir outputs and, in this case, remove the first 100pts to ensure that the transient effects are removed (shown on the right).
+Once the reservoir output states have been recorded, the transient outputs from the reservoir are removed before applying the linear regression. The following figure entitled _Reservoir States WITH Transient_, shows the output of the reservoir and illustrates the effect of the random instantiation. Notice that the output of the reservoir appears different for the first $\approx 50$ indices (see the left side of the image). After this timeframe, the behavior settles down into a consistent behavior. If we were to include this transient in the training, we would be negatively affected by the random instantiation of our dynamical reservoir. To resolve this issue, we truncate the reservoir outputs and, in this case, remove the first 100pts to ensure that the transient effects are removed (shown on the right).
 
 <img src="../../images/project_images/rc_and_lorenz/reservoir_output_with_transient.png" style="display:inline-block; width:45%;"> <img src="../../images/project_images/rc_and_lorenz/reservoir_output_without_transient.png" style="display:inline-block; width:48%;">
 
@@ -392,7 +392,7 @@ S_cross = np.linalg.pinv(reservoir_states)
 readout_weights = (S_cross@lorenz_target_data.T).T
 ```
 
-That's all there is to the training. The simplistic nature of the training is one of the main strengths of RC. There's no need for extensive backpropogation and gradient descent because the weights of the reservoir remain constant and the only component that needs to be trained is the Readout Matrix.
+That's all there is to the training. The simplistic nature of the training is one of the main strengths of RC. There's no need for extensive backpropogation and gradient descent because the weights of the reservoir remain constant and the only component that needs to be trained is the readout matrix.
 
 ### Create Feedback Loop and Generate Output
 
@@ -482,9 +482,10 @@ In the above figure, the LI-ESN output converges to a constant value instead of 
 
 As previously discussed, a proper dynamical system for a reservoir should maintain the echo state property. For the LI-ESN, this is acheived by setting the spectral radius of the reservoir to approximately $1$ to operate the system at the edge of chaos. 
 
-The astute reader may be wondering if the system remains stable if the spectral radius is set to greater than $1$. While at first glance, it may seem that the system would be unstable with spectral radius greater than $1$ because the eigenvalue would be greater than $1$, the leaky integrator coeffecient ($a$) applies a damping behavior that keeps the system stable. To illustrate the significance of spectral radius, consider the following figures.
+The astute reader may be wondering if the system remains stable if the spectral radius is set to greater than $1$. While at first glance, it may seem that the system would be unstable with spectral radius greater than $1$ because the biggest eigenvalue would be greater than $1$, the leaky integrator coeffecient ($a$) applies a damping behavior that keeps the system stable. To illustrate the significance of spectral radius, consider the following figures.
 
 The following figure shows the recursively generated output for a spectral radius $>1$
+
 
 <img src="../../images/project_images/rc_and_lorenz/spectral_radius_greater_than_1.png" alt="High spectral radius" width="80%"/>
 
@@ -496,6 +497,9 @@ The following figure shows the recursively generated output for a spectral radiu
 These figures only provide anecdotal evidence for the importance of spectral radius. But it has been well established in literature that a spectral radius of $\approx 1$ is optimal for the successful training of the LI-ESN model. For a more in depth understanding of the significance of spectral radius, the reader is encouraged to read the papers cited at the bottom of this article.
 
 
+# Conclusion
+
+In this article, we created a training dataset from a numerically simulated Lorenz system, created and trained an LI-ESN model on this data and viewed the recursively generated output. This application of the LI-ESN model is just one of many such use cases. The simplistic training requirements for this model make it a prime candidate for edge deployment for lightweight ML solutions. The reader is encouraged to read up on some of the papers and other Python resources listed below.
 
 # Further Reading
 
