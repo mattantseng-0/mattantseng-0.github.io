@@ -18,19 +18,19 @@ A public repo associated with this tutorial can be found at: [https://github.com
 ## Background
 ### Reservoir Computing
 
-The following figure from [6] shows the high level signal flow for an RC. The three main components of this system are: Input Matrix, Reservoir, and Readout Matrix. The input matrix is a randomly instantiated matrix that matches the dimension of the input data to the size of the reservoir. 
+The following figure from [6] shows the high level signal flow for an RC. The three main components of this system are: input matrix, reservoir, and readout matrix. The input matrix is a randomly instantiated matrix that matches the dimension of the input data to the size of the reservoir. 
 
 <img src="../../images/project_images/rc_and_lorenz/LI_ESN_Architecture.png" alt="Pendulum with different damping behavior" width="100%"/>
 
-The Reservoir is a dynamical system that evolves according to some nonlinear equation. For the LI-ESN, the nonlinear equation is as follows:
+The reservoir is a dynamical system that evolves according to some nonlinear equation. For the LI-ESN, the nonlinear equation is as follows:
 
 $$
 x[n] = (1-a)x[n] + a\times \tanh(W_{in}u[n] + \hat{W}x[n-1])
 $$
 
-In the above equation, $x[n]$ is the state of the reservoir at index $n$, $u[n]$ is the input data at index $n$ and $a$ is a damping term called the leaky integrator factor.
+In the above equation, $x[n]$ and $u[n]$ are the state of the reservoir and the input data respectively at index $n$. The $a$ term is a damping coeffecient called the leaky integrator factor.
 
-Finally, the readout matrix is a trained matrix that remaps the output of the Reservoir into some predicted output. 
+Finally, the readout matrix is a matrix determined with linear regression that remaps the output of the reservoir into some predicted output. 
 
 Each stage of the system can be described by considering the matrix dimensions: 
 
@@ -45,7 +45,7 @@ Where $I$ is the number of input channels, $R$ is the size of the reservoir and 
 
 ### The Echo State Property
 
-Now you might be wondering: Can the Reservoir be *any* nonlinear system? It's generally accepted in literature that the Reservoir should exhibit certain characteristics [1]: 
+Now you might be wondering: Can the reservoir be *any* nonlinear system? It's generally accepted in literature that the reservoir should exhibit certain characteristics [1]: 
 
 - The system should forget its initial conditions
 - The current output of the system should reflect the current input
@@ -123,17 +123,17 @@ def lorenz(t, vars, rho, sigma, beta):
 
 ```
 
-Next, define the three variables. You will notice that instead of using round numbers like $28$ and $10$ we use approximately those values. This is a little trick that we can play to make sure our simulation doesn't round as much.
-
+Next, define the three canoncial coeffecients for the Lorenz system:
 
 ```python
-# These are the historical weights from the original Lorenz System 
-rho = 27.999999
-sigma = 9.999999
+# These are the canonical weights from the original Lorenz System 
+rho = 28
+sigma = 10
 beta = 8/3
 ```
 
-Now we need to define the duration, sampling rate and initial conditions for the system. We will use a random number to instantiate the $x$ initial condition. This will ensure that every time we run this simulation, we get a different time series. 
+Now we need to define the duration, sampling rate and initial conditions for the system. We will use a random number to instantiate the $x$ initial condition. This will ensure that every time we run this simulation, we get a different time series. There's no real functional necessity for this random instantiation, however it does serve to illustrate a level of robustness that the LI-ESN works regardless of initial condition.
+
 
 ```python
 t_start = 0
@@ -337,12 +337,12 @@ reservoir_weights = spectral_radius * reservoir_weights
 
 ### Train Readout Matrix
 
-At this point in the article, we have discussed background, created a training dataset and finally defined the Input and Reservoir matrices necessary to the LI-ESN system. It is now time to train the Readout Matrix so we can make our predictions.
+At this point in the article, we have discussed background, created a training dataset and finally defined the input and reservoir matrices necessary to the LI-ESN system. It is now time to train the Readout Matrix so we can make our predictions.
 
 
 #### Input Training Data
 
-The first step in training the readout matrix is to pass all of our training data through the Input Matrix and Reservoir. The resulting output from the reservoir will be recorded in a matrix of shape $[R\times N]$ where $R$ is the size of the reservoir and $N$ is the number of training points that have been passed through.
+The first step in training the readout matrix is to pass all of our training data through the input matrix and reservoir. The resulting output from the reservoir will be recorded in a matrix of shape $[R\times N]$ where $R$ is the size of the reservoir and $N$ is the number of training points that have been passed through.
 
 ```python
 # This is where we store our reservoir outputs
@@ -392,7 +392,7 @@ S_cross = np.linalg.pinv(reservoir_states)
 readout_weights = (S_cross@lorenz_target_data.T).T
 ```
 
-That's all there is to the training. The simplistic nature of the training is one of the main strengths of RC. There's no need for extensive backpropogation and gradient descent because the weights of the Reservoir remain constant and the only component that needs to be trained is the Readout Matrix.
+That's all there is to the training. The simplistic nature of the training is one of the main strengths of RC. There's no need for extensive backpropogation and gradient descent because the weights of the reservoir remain constant and the only component that needs to be trained is the Readout Matrix.
 
 ### Create Feedback Loop and Generate Output
 
@@ -466,6 +466,36 @@ Additionally, the 3D attractor plots can also be shown.
 <img src="../../images/project_images/rc_and_lorenz/recursively_generated_attractors.png" alt="resulting output" width="80%"/>
 
 In the time series plot, we see the same anitpodal symmetry in the $x$ and $y$ channels and the attractor plot shows the familiar butterfly wings. These qualitative observations show that the LI-ESN was generally able to learn the shape and behavior of the Lorenz System.
+
+# Additional Observations
+
+## Sampling Rate Impact
+
+The sampling rate of the training data is important to consider for the ability of the LI-ESN model to learn the dynamics of the system. At an intuitive level, one might expect that a higher sampling rate would more accurately describe the systems behavior and thus lead to a more successful training. This, however, is not the case. The following figure shows the recursively generated output for a sampling rate of $0.0001s$. 
+
+<img src="../../images/project_images/rc_and_lorenz/dt_0_0001.png" alt="High sampling rate" width="80%"/>
+
+In the above figure, the LI-ESN output converges to a constant value instead of learning the dynamics of the Lorenz system. This unexpected behavior is due to a mismatch between the reservoir's timescale and the systems timescale. The reader may find it interesting to spend some time altering the sampling rate and various parameters of the reservoir to get a proper match that results in an LI-ESN model that is able to recursively generate a Lorenz system with faster sampling rate. Another approach that could result in a successful model would be batched predicted outputs. The current setup is predicting the $n+1$ sample which does not have much of an amplitude change. By training the system to predict the next 5 states, the LI-ESN may gain more contextual awareness of the dynamics of the system.
+
+
+## Spectral Radius Impact
+
+As previously discussed, a proper dynamical system for a reservoir should maintain the echo state property. For the LI-ESN, this is acheived by setting the spectral radius of the reservoir to approximately $1$ to operate the system at the edge of chaos. 
+
+The astute reader may be wondering if the system remains stable if the spectral radius is set to greater than $1$. While at first glance, it may seem that the system would be unstable with spectral radius greater than $1$ because the eigenvalue would be greater than $1$, the leaky integrator coeffecient ($a$) applies a damping behavior that keeps the system stable. To illustrate the significance of spectral radius, consider the following figures.
+
+The following figure shows the recursively generated output for a spectral radius $>1$
+
+<img src="../../images/project_images/rc_and_lorenz/spectral_radius_greater_than_1.png" alt="High spectral radius" width="80%"/>
+
+The following figure shows the recursively generated output for a spectral radius $<1$
+
+<img src="../../images/project_images/rc_and_lorenz/spectral_radius_less_than_1.png" alt="Low spectral radius" width="80%"/>
+
+
+These figures only provide anecdotal evidence for the importance of spectral radius. But it has been well established in literature that a spectral radius of $\approx 1$ is optimal for the successful training of the LI-ESN model. For a more in depth understanding of the significance of spectral radius, the reader is encouraged to read the papers cited at the bottom of this article.
+
+
 
 # Further Reading
 
