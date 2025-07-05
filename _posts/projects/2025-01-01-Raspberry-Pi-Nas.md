@@ -14,7 +14,7 @@ thumbnail: "/images/project_images/real_world_data_driven_modeling/single_diode_
 # Assembly
 
 ## Threaded Inserts
-T
+
 
 
 **Parts for this step:**
