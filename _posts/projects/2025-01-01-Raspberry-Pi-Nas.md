@@ -4,10 +4,13 @@ layout: gridlay
 date: 2025-05-01
 sitemap: false
 permalink: /projects/raspberry_pi_nas
-thumbnail: "/images/project_images/real_world_data_driven_modeling/single_diode_timeseries.png"
+thumbnail: "/images/project_images/raspberry_pi_nas/rpi_nas_render.png"
 ---
 
-# Raspberry Pi NAS
+
+<img src="../../images/project_images/raspberry_pi_nas/rpi_nas_render.png" alt="Base for horizontal orientation" width="80%"/>
+
+# Raspberry Pi NAS Case
 
 I recently saw an interesting [video](https://www.youtube.com/watch?v=l30sADfDiM8) by Jeff Geerling where he built a NAS using a Raspberry Pi and 4x SSDs. I thoroughly enjoyed the project and thought that I would build my own. Unfortunately, SSDs are expensive and I wanted a NAS with 8TB of storage in a RAID 10 configuration. If I were to use 2.5\" SSDs that would cost ~800USD, whereas the equivalent using  using 3.5" HDDs would only cost ~340USD. 
 
@@ -42,7 +45,8 @@ NOTE: These are not affiliate links. These are just the parts that I used.
 - (1x) [6" RJ45 cable](https://www.amazon.com/dp/B07MVS5NRT?ref_=ppx_hzsearch_conn_dt_b_fed_asin_title_4)
 - (26x) [M3 Threaded inserts](https://www.amazon.com/dp/B0CYL92VTF?ref_=ppx_hzsearch_conn_dt_b_fed_asin_title_1)
 - (1kg) [PETG Filament](https://www.amazon.com/HATCHBOX-3D-Filament-Dimensional-Accuracy/dp/B014VM95IK/ref=sr_1_4_pp?crid=10I4FOAQUUDS6&dib=eyJ2IjoiMSJ9.j2b3XXrp_Si9Hzg9O9YaaeotcD10RvXCkHBnma-VgRvro1dwFsPyZF-_dtAjNziGJyubbvmSCC5MXD4ZALJZc_7dm0IVClpDez2HmdsQZCm6hxU2h8xeny__OtM4a7LY-CipMBwYjP6otsg_P2--27Gje6jETPxlNA7ESnBUpCvgxDRy9E4nZfzhsFteWDY3ZCzp5V6GpDNzyHZPj81GJJ-kSprYqVRDoNYbRnMhCrYErNKaCBfBHpOmxtbSWlCCZC-hrp3E53x35e3LN_OZSbD9UPP8cuBPr98s4ReQDlE.X9fW6MjxutXjY_zDyhlLboEHmDC5RGCicjN2Hs1isiI&dib_tag=se&keywords=petg&qid=1751720736&s=industrial&sprefix=pet%2Cindustrial%2C135&sr=1-4&th=1)
-- TODO: Add 12vDC connector
+- (1x) 12V-DC 5525 plate connector
+- (1x) 12V-DC 5525 pigtails
 - [12v 5A DC Power Supply](https://www.amazon.com/dp/B01GEA8PQA?ref_=ppx_hzsearch_conn_dt_b_fed_asin_title_1)
 
 
@@ -50,7 +54,7 @@ NOTE: These are not affiliate links. These are just the parts that I used.
 
 
 # Printing
-I used PETG for my filament because it has better longevityl; however, none of the components get hot in the NAS, so you should be fine to use PLA if you don't have access to PETG. 
+I used PETG for my filament because it has better longevity; however, none of the components get hot in the NAS, so you should be fine to use PLA if you don't have access to PETG. 
 
 Print out the following parts:
 - (2x) case_to_hdd_bracket
@@ -126,14 +130,12 @@ Place 4x inserts into the underside of each top/bottom ring
 **Parts for this step**
 - (2x) case_to_hdd_bracket
 - (4x) Side Pillar 
-- (4x) TODO mm M3 bolts
+- (4x) 16mm M3 bolts
 
 
 Once you have placed the threaded inserts into the components, the next step is to mount the HDD side bracket to the corner pillars. 
 
-Place 4x inserts into the underside of each top/bottom ring
-
-Take a TODO mm screw and begin threading it into the middle screw hole (see the left image). Repeat this step for a second corner pillar and then fully screw the bolts into the inserts of the HDD bracket (see the right image). Repeat this step for the second set of corner pillars and case_to_hdd_bracket. 
+Take a 16mm bolt and begin threading it into the middle screw hole (see the left image). Repeat this step for a second corner pillar and then fully screw the bolts into the inserts of the HDD bracket (see the right image). Repeat this step for the second set of corner pillars and case_to_hdd_bracket. 
 
 
 <div style="display: flex; gap: 10px; align-items: center;">
@@ -147,14 +149,14 @@ Take a TODO mm screw and begin threading it into the middle screw hole (see the 
 - (2x) Side Frame Assembly
 - Bottom Ring
 - Top Ring
-- (8x) TODO mm M3 bolts
+- (8x) 10mm M3 bolts
  
-Once you have completed both side frames, use TODO mm bolts to attach the corner pillars to the bottom ring. It is important that the tabs on the case_to_hdd_bracket are facing downwards towards as shown in the image.
+Once you have completed both side frames, use  10mm bolts to attach the corner pillars to the bottom ring. It is important that the tabs on the case_to_hdd_bracket are facing downwards towards as shown in the image.
 
 <img src="../../images/project_images/raspberry_pi_nas/assembly_5.jpeg" alt="Threaded Inserts" width="80%"/>
 
 
-Next, use TODO mm bolts to attach the Top Ring to the other end of the 4 pillars. The resulting assembly will look like this: 
+Next, use  10mm bolts to attach the Top Ring to the other end of the 4 pillars. The resulting assembly will look like this: 
 <img src="../../images/project_images/raspberry_pi_nas/assembly_3.jpeg" alt="Threaded Inserts" width="80%"/>
 
 ## Attaching the HDD Mounting Bracket
@@ -162,9 +164,9 @@ Next, use TODO mm bolts to attach the Top Ring to the other end of the 4 pillars
 - Current Assembly
 - hdd_bracket_side
 - hdd_bracket_side_mirror
-- (6x) TODO mm M3 bolts
+- (6x)  6mm M3 bolts
 
-With the top and bottom rings attached, now use 3x TODO mm bolts to attach the HDD Mounting Bracket to the case_to_hdd_bracket as shown in the following image. Do the same thing for the other side as well.
+With the top and bottom rings attached, now use 3x  6mm bolts to attach the HDD Mounting Bracket to the case_to_hdd_bracket as shown in the following image. Do the same thing for the other side as well.
 
 <img src="../../images/project_images/raspberry_pi_nas/assembly_2.jpeg" 
 alt="Threaded Inserts" width="80%"/>
@@ -181,19 +183,44 @@ The assembly is snug, but the tabs on the HDD Side bracket are designed to accom
 ## Base Assembly
 **Parts for this step**
 - Raspberry Pi
-- (4x) TODO mm standoffs
-- (4x) TODO bolts
 - HDMI passthrough connector
 - USB-A passthrough connector
 - Ethernet passthrough connector
 - 12v DC passthrough connector 
-- 4x TODO mm M3 bolts
+- (4x) 6mm M3 bolts
+- (4x) 6mm M2.5 bolts
+- (4x) 5mm M2.5 M-F standoffs
+- (4x) 18mm M2.5 M-F standoffs
+- (4x) M2.5 nuts
 
 
 The current case design does not allow for easy access to the SD card on the Raspberry Pi. Before you mount the Raspberry Pi, you should flash the SD card and get your OpenMediaVault installation setup.
 
- Once your OS is setup, use the TODO mm standoffs and TODO bolts to mount your Raspberry Pi, and the connectors as shown in one of the above images. NOTE: make sure that the SATA ports on the hat are parallel with the orientation of the drives.
+As noted above, there are two variants of the NAS for either horizontal or vertical orientations. The instructions for this step are the same for both, but some of the cable lengths may differ.
 
+Once your OS is setup, use the M2.5 standoffs, bolts and nuts to mount your Raspberry Pi.
+
+
+<img src="../../images/project_images/raspberry_pi_nas/assembly_24.jpeg" alt="Base for horizontal orientation" width="80%"/>
+
+Next, use the included hardware to mount all three passthrough connectors. Also, solder a jumper to connect the 12V DC connector from the plate-mount port to the Penta SATA Hat.
+
+<img src="../../images/project_images/raspberry_pi_nas/assembly_23.jpeg" alt="Base for horizontal orientation" width="80%"/>
+
+Finally, connect the short jumper cables between the passthrough connectors and the Raspberry Pi
+ 
+ <img src="../../images/project_images/raspberry_pi_nas/assembly_25.jpeg" alt="Base for horizontal orientation" width="80%"/>
+ 
+
+Finally, use 4x 6mm M3 bolts to attach the Raspberry Pi plate to the bottom ring of the case. 
+
+ <img src="../../images/project_images/raspberry_pi_nas/assembly_26.jpeg" alt="Base for horizontal orientation" width="80%"/>
+
+NOTE: make sure that the SATA ports on the hat are parallel with the orientation of the drives.
+
+At this point, the bottom of the case should look like this: 
+
+ <img src="../../images/project_images/raspberry_pi_nas/assembly_21.jpeg" alt="Base for horizontal orientation" width="80%"/>
 
 
 ## Mounting the Drives
@@ -204,6 +231,21 @@ The current case design does not allow for easy access to the SD card on the Ras
 
 First, attach each cable to a drive. Next, with the case on its side, slide the drives in one at a time starting from the bottom. The drive's cable port should be on the side *opposite* of the Raspberry Pi and you should route the cable under the drive as you slide it into place. Use the fasteners that came with your drive to screw it into place. Finally plug the drive into the SATA hat. Getting your fingers inside to plug in the SATA port may be a tight squeeze, so I recommend plugging each drive as you put it into the case.
 
+Here you can see the drives mounted in place from the side
+
+<img src="../../images/project_images/raspberry_pi_nas/assembly_16.jpeg" alt="Threaded Inserts" width="80%"/>
+
+
+And here you can see the drives from the front
+<img src="../../images/project_images/raspberry_pi_nas/assembly_15.jpeg" alt="Threaded Inserts" width="80%"/>
+
+Finally, this image shows the SATA connectors plugged into the Raspberry Pi
+
+<img src="../../images/project_images/raspberry_pi_nas/assembly_14.jpeg" alt="Threaded Inserts" width="80%"/>
+
+
+
+
 
 ## Mounting the Fan
 **Parts for this step**
@@ -211,9 +253,22 @@ First, attach each cable to a drive. Next, with the case on its side, slide the 
 - (1x) [92mm fan](https://www.amazon.com/dp/B07DXTN515?ref_=ppx_hzsearch_conn_dt_b_fed_asin_title_1)
 - (1x) fan_extender
 - (1x) fan_end_mount
-- TODO fasteners
+- (4x) 30mm M3 bolts
+- (4x) 15mm M3 bolts
+- (4x) M3 nuts
 
-Mount the fan to the fan_end_mount so that the fan is blowing outwards. Next, thread the TODO fasteners through the fan_end_mount and through the fan_extender (the bolt should pass through smoothly). Next, place the fan assembly on to the end of the current case assembly and tighten the four corner bolts into the rest of the case. In my setup I have the fan connected to one of the extra USB ports on the Raspberry Pi for power. To acheive this, route the fan's cable all the way through the case and connect it to the Raspberry Pi.
+Use the 15mm M3 bolts and M3 nuts to mount the fan to the fan_end_mount so that the fan is blowing outwards.
+
+<img src="../../images/project_images/raspberry_pi_nas/assembly_17.jpeg" alt="Threaded Inserts" width="80%"/>
+
+ Next, thread the 30mm M3 bolts bolts through the fan_end_mount and through the fan_extender (the bolt should pass through smoothly). 
+
+ <img src="../../images/project_images/raspberry_pi_nas/assembly_18.jpeg" alt="Threaded Inserts" width="80%"/>
+
+Next, place the fan assembly on to the end of the current case assembly and tighten the four corner bolts into the rest of the case. In my setup I have the fan connected to one of the extra USB ports on the Raspberry Pi for power. To acheive this, route the fan's cable all the way through the case and connect it to the Raspberry Pi.
+
+
+ <img src="../../images/project_images/raspberry_pi_nas/assembly_19.jpeg" alt="Threaded Inserts" width="80%"/>
 
 ## Side Plates and Bounding Ring
 **Parts for this step**
@@ -223,7 +278,11 @@ Mount the fan to the fan_end_mount so that the fan is blowing outwards. Next, th
 
 The design of the case has an ugly seam where the corner_pillars meet the ends of the case. The purpose of the bounding rings is to cover this seam to make the case look slightly cleaner. The final step in the assembly is to place all four side plates onto the case, then slide the bounding rings over the seam. Finally, pass bolts through the bounding ring and thread into the corner pillars. NOTE: the corner pillars do not have inserts, so don't over tighten the bolts.
 
-# Operation
+ <img src="../../images/project_images/raspberry_pi_nas/assembly_20.jpeg" alt="Threaded Inserts" width="80%"/>
+
+
+
+# Operating Temperature
 
 With the fan attached, the temperature inside the case usually stays below 40$^\circ$C.
 
@@ -231,6 +290,8 @@ With the fan attached, the temperature inside the case usually stays below 40$^\
   <img src="../../images/project_images/raspberry_pi_nas/cpu_temp.png" width="40%">
   <img src="../../images/project_images/raspberry_pi_nas/hdd_temp.png" width="40%">
 </div>
+
+
 
 # Helpful Resources
 - [Inspiration video from Jeff Geerling](https://www.youtube.com/watch?v=l30sADfDiM8)
