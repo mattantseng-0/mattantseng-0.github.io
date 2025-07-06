@@ -28,7 +28,7 @@ $$
 x[n] = (1-a)x[n] + a\times \tanh(W_{in}u[n] + \hat{W}x[n-1])
 $$
 
-In the above equation, $x[n]$ and $u[n]$ are the state of the reservoir and the input data respectively at index $n$. The $a$ term is a damping coeffecient called the leaky integrator factor.
+In the above equation, $x[n]$ and $u[n]$ are the state of the reservoir and the input data respectively at index $n$. The $a$ term is a damping coefficient called the leaky integrator factor.
 
 Finally, the readout matrix is a matrix determined with linear regression that remaps the output of the reservoir into some predicted output. 
 
@@ -55,7 +55,7 @@ The combination of these characteristics make up what's called the Echo State Pr
 
 ### The Lorenz System
 
-The Lorenz System will be used as a test case for the LI-ESN. Originally introduced in [4] as a simplistic model for convective behavior, the Lorenz System has become almost synonomous with the field of nonlinear dynamics and chaos. The equations for the Lorenz System are shown in the following:
+The Lorenz System will be used as a test case for the LI-ESN. Originally introduced in [4] as a simplistic model for convective behavior, the Lorenz System has become almost synonymous with the field of nonlinear dynamics and chaos. The equations for the Lorenz System are shown in the following:
 
 $$
 \begin{split}
@@ -106,7 +106,7 @@ plt.rcParams["font.family"] = "Times New Roman"
 
 ### Modeling the Lorenz System
 
-The next step in this project is to create our training data for the Lorenz system. In this section, we will use a Runge-Kutta-4 solver to simulate the Lorenz system. To start, create the following function whose input arguments correspond with the coeffecients of the Lorenz equations.
+The next step in this project is to create our training data for the Lorenz system. In this section, we will use a Runge-Kutta-4 solver to simulate the Lorenz system. To start, create the following function whose input arguments correspond with the coefficients of the Lorenz equations.
 
 ```python
 def lorenz(t, vars, rho, sigma, beta):
@@ -123,7 +123,7 @@ def lorenz(t, vars, rho, sigma, beta):
 
 ```
 
-Next, define the three canoncial coeffecients for the Lorenz system:
+Next, define the three canonical coefficients for the Lorenz system:
 
 ```python
 # These are the canonical weights from the original Lorenz System 
@@ -204,7 +204,7 @@ lorenz_data[2, :] /= z_scaling_factor
 
 #### Training Inputs/Outputs
 
-To determine how we want to format our training inputs and targets, we need to consider what task we want the LI-ESN accomplish. For this article, we are going to have the input be the state of the system $X[n]$ and the ouput will be the predicted next step $X'[n+1]$. Creating a system that predicts the $X'[n+1]$ value will allow us to feed the output of the LI-ESN model back to the input and recursively run our model. 
+To determine how we want to format our training inputs and targets, we need to consider what task we want the LI-ESN accomplish. For this article, we are going to have the input be the state of the system $X[n]$ and the output will be the predicted next step $X'[n+1]$. Creating a system that predicts the $X'[n+1]$ value will allow us to feed the output of the LI-ESN model back to the input and recursively run our model. 
 
 An example of an alternate task that can be performed by an LI-ESN model is the prediction of an unknown state variable. For example, for an input: $X[n] = [x[n], y[n]]$ and training target $z[n]$, the LI-ESN can be trained to predict $z'[n]$ for a given pair of $x[n]$, $y[n]$ values.
 
@@ -307,7 +307,7 @@ total_elements = np.size(reservoir_weights)
 # use the given ratio to determine how many need to be zeros
 number_to_zeros = int(sparsity*total_elements)
 
-# now get the correct number of indicies
+# now get the correct number of indices
 indices_to_set_to_zero = np.random.choice(total_elements, number_to_zeros, replace=False)
 
 # flatten matrix into vector to make assignment easier
@@ -480,9 +480,9 @@ In the above figure, the LI-ESN output converges to a constant value instead of 
 
 ## Spectral Radius Impact
 
-As previously discussed, a proper dynamical system for a reservoir should maintain the echo state property. For the LI-ESN, this is acheived by setting the spectral radius of the reservoir to approximately $1$ to operate the system at the edge of chaos. 
+As previously discussed, a proper dynamical system for a reservoir should maintain the echo state property. For the LI-ESN, this is achieved by setting the spectral radius of the reservoir to approximately $1$ to operate the system at the edge of chaos. 
 
-The astute reader may be wondering if the system remains stable if the spectral radius is set to greater than $1$. While at first glance, it may seem that the system would be unstable with spectral radius greater than $1$ because the biggest eigenvalue would be greater than $1$, the leaky integrator coeffecient ($a$) applies a damping behavior that keeps the system stable. To illustrate the significance of spectral radius, consider the following figures.
+The astute reader may be wondering if the system remains stable if the spectral radius is set to greater than $1$. While at first glance, it may seem that the system would be unstable with spectral radius greater than $1$ because the biggest eigenvalue would be greater than $1$, the leaky integrator coefficient ($a$) applies a damping behavior that keeps the system stable. To illustrate the significance of spectral radius, consider the following figures.
 
 The following figure shows the recursively generated output for a spectral radius $>1$
 
