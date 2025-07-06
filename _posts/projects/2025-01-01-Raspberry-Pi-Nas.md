@@ -24,7 +24,9 @@ I was also able to find this design for 3.5" drives:
 
 I only have a Prusa Mini which has a build volume of 180mm$\times$180mm$\times$180mm which is unable to accommodate the above design. So I designed my own case that can accommodate 3.5" drives and be printed on a mini-sized printer. 
 
-The files for this project can be found here: TODO. The goal of this article is to walk through the assembly process for the case. I would recommend checking out the resources listed at the bottom of this page for more in-depth information about how to setup OpenMediaVault for the operating system of your NAS.
+The files for this project can be found here: [Radxa Penta SATA Hat Raspberry Pi NAS 3.5" HDD](https://www.printables.com/model/1346682-radxa-penta-sata-hat-raspberry-pi-nas-35-hdd). 
+
+The goal of this article is to walk through the assembly process for the case. I would recommend checking out the resources listed at the bottom of this page for more in-depth information about how to setup OpenMediaVault for the operating system of your NAS.
 
 
 
@@ -291,6 +293,9 @@ With the fan attached, the temperature inside the case usually stays below 40$^\
   <img src="../../images/project_images/raspberry_pi_nas/hdd_temp.png" width="40%">
 </div>
 
+# Conclusion
+
+At this point, you have completed the case assembly and are ready to setup the software portion of your NAS. To learn more about setting up OpenMediaVault and other open sourced projects, checkout the links below. 
 
 
 # Helpful Resources
