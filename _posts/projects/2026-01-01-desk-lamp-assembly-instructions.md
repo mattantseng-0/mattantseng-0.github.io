@@ -12,6 +12,8 @@ thumbnail: "/images/project_images/hexagon_desk_lamp/desk_lamp_rendering.png"
 
 The following document lists the assembly instructions for a desk lamp. The lamp design can be printed on a mini-sized printer (180x180x180) and was created to use a recycled lamp socket.
 
+Step files for this project can be found: https://www.printables.com/model/1413544-desk-lamp-for-mini-printers
+
 <img src="../../images/project_images/hexagon_desk_lamp/Screenshot 2025-12-31 at 08.26.00.png" alt="Exploded View of Lamp" width="100%"/>
 
 ## Parts & Printing Quantities
