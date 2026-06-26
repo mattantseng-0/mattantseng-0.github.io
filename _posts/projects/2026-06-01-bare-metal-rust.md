@@ -18,19 +18,18 @@ The goal of this exercise is to learn about using Rust to write baremetal firmwa
 
 ## Article Structure:
 
-The article walks through the iterative development process. As such, the sections will require re-writing and re-structuring code to add new features. While the article itself will only discuss the main points of each step, a link to the relevant diff can be found at the top of each section.
+The article walks through the iterative development process. As such, the code presented in each of the sections is not meant to be perfect production code. Instead, each section will present a minor, iterative improvement working towards finalized code. While the article itself will only discuss the main points of each step, a link to the relevant diff can be found at the top of each section.
 
 
-- Phase 0: Project Setup:
-    - Before we begin this project, we will spend some time setting up the workspaces necessary for the project and the bare metal development environment.
-- Phase 1: Streaming Data
-    - Once the initial project setup is complete, we can begin streaming dummy data to a serial data reader running on a laptop. 
-- Phase 2: Talking to the Accelerometer
-    - Once we have the data streaming functionality written, we will introduce the necessary code to talk to the LIS3DH accelerometer. 
-- Phase 3: Receiving Data
-    - Once the streaming functionality is written on the bare metal side, we will transition to writing a data receiver and plotter running on a laptop.
-- Phase 4: Improving Performance
-    - Finally, once the core functionality is fleshed out, we can focus on increasing the data transfer rates. 
+- Part 1: Project Setup
+    - The first part of this project will focus on setting up the workspaces for the firmware and the receiver, and creating our shared accelerometer message. 
+- Part 2: Firmware
+    - Once the initial project setup is complete, we will write the firmware to read from the accelerometer and stream that data using the virtual com port and the USB bus. 
+- Part 3: Receiver and Plotter
+    - Once we have the data streaming functionality written on the CPX, we will transition to writing the receiving and plotting application. 
+    - Additionally, this section will cover the creation of a simulation tool that can send dummy accelerometer data when the CPX hardware is not available.
+- Part 4: Improving Performance
+    - Finally, once the core functionality is fleshed out, we can focus on increasing the data transfer rates and updating the code with quality of life improvements.
 
 ## Hardware Overview
 
@@ -56,7 +55,7 @@ Below are the crates used for data plotting and serialization:
 - Plotting Crate:
     - [Egui Plot](https://crates.io/crates/egui_plot)
 
-## Phase 0: Project Setup
+## Part 1: Project Setup
 
 ### Workspace Initialization
 
@@ -152,7 +151,8 @@ pub struct AccMsg {
 While the inclusion of the MessageID field is unecessary for this excercise, it will allow for future introductions of additional message types. 
 
 
-## Phase 1: Firmware
+## Part 2: Firmware
+### Basic Data Transfers
 
 Step Diffs: [Basic Serial Writing](https://github.com/mattantseng-0/rust_cpx_accel_rx_tx/commit/d14d39b990380cb7829f4a3f3f15f7d11b9e4c34)
 
@@ -226,7 +226,7 @@ In order for this function to work, it must have access to the usb_serial device
 
 <img src="../../images/project_images/bare_metal_rust/basic_serial_data.png" alt="Dummy Serial Data" width="100%"/>
 
-## Sending Dummy Accelerometer Data
+### Sending Dummy Accelerometer Data
 
 Step Diffs: [CPX send dummy accel msg](https://github.com/mattantseng-0/rust_cpx_accel_rx_tx/commit/6bbbf7c5867254bcb0fd58806f1485a21a126183)
 
@@ -289,13 +289,15 @@ Once again, we can use a serial monitor tool to read our data.
 
 In the updated code, the postcard crate is used to calculate a CRC on the contents of our message. The fact that we are using a virtual com port actually makes this operation redundant because the USB virtual com port already includes error checking.
 
-## Communicating with the Accelerometer
+### Communicating with the Accelerometer
 
 Step Diffs: [Read and Stream Accel Data](https://github.com/mattantseng-0/rust_cpx_accel_rx_tx/commit/298a4d83478887ec7eb1d1a9927bb20f9dae2e43)
 
 At this point in the project, we have all of the message plumbing in place to stream our formatted message out of the virtual com port. At this point in the project, we can introduce the accelerometer. 
 
-In order to keep the tx code seperate from the accelerometer reading logic, we will introduce a data queue that contains the values read from the accelerometer. Then, we will update the `usb_tx_loop` to pull data from the queue and send it out. 
+In order to keep the tx code seperate from the accelerometer reading logic, we will introduce a new asynchronous function `poll_accel` that is a producer into a data queue. Then, we will update the `usb_tx_loop` to consume from the queue and send it out. 
+
+<img src="../../images/project_images/bare_metal_rust/accel_fifo.png" alt="Accelerometer Fifo" width="100%"/>
 
 The following async function is responsible for reading from the accelerometer:
 
@@ -362,180 +364,210 @@ Next, update the `usb_tx_loop` to deque the accelerometer data:
     }
 ```
 
-## 
+## Part 3: Receiver and Plotter
+### Preliminary Data Plotting
 
-### Old Content
---- 
-## Phase 1: Streaming Data
+Step Diffs: [Basic Accelerometer Data Plotting](https://github.com/mattantseng-0/rust_cpx_accel_rx_tx/commit/2fbed2e28dd9a3c62287eb876ccad600e8799635)
 
-The ATSAMD-HAL crate has some really good information to get started developing bare metal firmware in Rust. The starting point of the data-streaming portion of this project can be found in the usb_serial example for the CPX: [usb_serial.rs](https://github.com/atsamd-rs/atsamd/blob/master/boards/circuit_playground_express/examples/usb_serial.rs)
+Now that we have an initial implementation to stream accelerometer data form the CPX, we can transition to the message receiver and plotter. Before we begin writing the actual receiver. The core handling of the rx buffer can be seen below: 
 
-One interesting observation of this example code, is the use of `#[task]`
-
-To begin modifying this example to meet our needs, I wrote the following async function: 
 ```rust
-    #[task(shared = [usb_serial])]
-    async fn usb_tx_loop(mut cx: usb_tx_loop::Context)
-    {
-        let counter: u16 = 0;
-        let mut tx_msg = AccMsg::new();
-        let mut output_buffer = [0u8; core::mem::size_of::<AccMsg>() + 4];
+while read_fifo.len() > std::mem::size_of::<AccMsg>() + 4  {
+    match take_from_bytes_crc32::<AccMsg>(&read_fifo, CRC_ALGO.digest()) {
+        Ok((parsed_msg, remaining)) => {
+            println!("remaining.len(): {:?}", remaining.len());
+            rx_data.push_front(parsed_msg);
+            *read_fifo = remaining.to_vec();
+            got_new_data = true;
+            *num_msgs = num_msgs.wrapping_add(1);
 
-        tx_msg.counter = 0 as u16;
-        tx_msg.acc_x = 1 as f32;
-        tx_msg.acc_y = 2 as f32;
-        tx_msg.acc_z = 3 as f32;
+            println!("rx_data.len(): {:?}", rx_data.len());
+            if rx_data.len() > num_points as usize {
 
-        loop {
-
-            tx_msg.acc_x = (tx_msg.counter as f32);
-            tx_msg.acc_y = (tx_msg.counter as f32) + 1f32;
-            tx_msg.acc_z = (tx_msg.counter as f32) - 1f32; 
-
-
-            let serialized_slice = postcard::to_slice_crc32(
-                &tx_msg, 
-                &mut output_buffer, 
-                CRC_ALGO.digest()
-            ).expect("Serialization failed");
-
-            cx.shared.usb_serial.lock(|serial| {
-                let _ = serial.write(serialized_slice);
-            });
-            tx_msg.counter = tx_msg.counter.wrapping_add(1);
-
-            Mono::delay(100u64.micros()).await;
+                rx_data.truncate(num_points as usize);
+            }
+        }
+        Err(e) => {
+            println!("Error: {:?}", e);
+            // If there's a decoding issue, then assume misalignment and drop the 0th entry to attempt to realign
+            read_fifo.remove(0);
+            break;
         }
     }
-```
-The above function trivially sends our data structure over the virtual com port. Using a serial data reader plugin in VSCode, we can verify that data is in fact getting sent to our laptop.
-
-<img src="../../images/project_images/bare_metal_rust/dummy_serial_data.png" alt="Dummy Serial Data" width="100%"/>
----
-
-## Phase 2: Talking to the Accelerometer
-
-There is an example of using the LIS3DH written for the EdgeBadge [neopixel_tilt.rs](https://github.com/atsamd-rs/atsamd/blob/master/boards/edgebadge/examples/neopixel_tilt.rs)
-
-The key code snippet from this example is: 
-
-```rust
-    let i2c = pins.i2c.init(
-        &mut clocks,KiloHertz
-        peripherals.SERCOM2,
-        &mut peripherals.MCLK,
-        &mut pins.port,
-    );
-
-    let mut lis3dh = Lis3dh::new(i2c, 0x19).unwrap();
-    lis3dh.set_range(lis3dh::Range::G2).unwrap();
-    lis3dh.set_datarate(lis3dh::DataRate::Hz_100).unwrap();
-
-```
-
-While this example shows us roughly how to setup the hardware, there are some differences that need to be addressed. In the pin definition of the EdgeBadge, we find that there are already these handy definitions for the `sda` and `scl` pins: 
-```rust
-define_pins!(
-    ...
-    // I2C (connected to LIS3DH accelerometer)
-    /// STEMMA SDA
-    pin sda = a12,
-    /// STEMMA SCL
-    pin scl = a13,
-    ...
-)
-```
-
-The pin definitions for the CPX are different and the only mention of the `sda` and `scl` pins are: 
-
-```rust
-pub mod pins {
-    use super::hal;
-
-    hal::bsp_pins!(
-        ... 
-        PA00 {
-            name: accel_sda,
-            aliases: {
-                AlternateD: AccelSda
-            }
-        },
-        PA01 {
-            name: accel_scl,
-            aliases: {
-                AlternateD: AccelScl
-            }
-        },
-        ...
-    );
-}     
-```
-
-Using these definitions, we can initialize the hardware for the LIS3DH with the following code snippet: 
-```rust
-let sda_pin: bsp::AccelSda = pins.accel_sda.into();
-let scl_pin: bsp::AccelScl = pins.accel_scl.into();
-
-
-let i2c_pads = i2c::Pads::new(sda_pin, scl_pin);
-
-let i2c = i2c::Config::new(
-    &mut peripherals.pm,
-    peripherals.sercom1,
-    i2c_pads, 
-    freq,
-).baud(Hertz::Hz(400000)) // Configure for 400kHz fast mode
-.enable();
-
-let mut lis3dh = Lis3dh::new_i2c(i2c, SlaveAddr::Alternate).unwrap();
-
-lis3dh.set_range(lis3dh::Range::G2).unwrap();
-lis3dh.set_datarate(lis3dh::DataRate::Hz_400).unwrap();
-```
-
-In addition to the hardware setup, we need to think about how we take our data from the accelerometer and send it over the serial interface. The accomplish this, we can leverage the `heapless` crate. Our `Shared` struct can be updated to include a Queue that holds the accelerometer data: 
-
-```rust
-#[shared]
-struct Shared {
-    // The LED could be a local resource, since it is only used in one task
-    // But we want to showcase shared resources and locking
-    red_led: bsp::RedLed,
-    usb_bus: UsbDevice<'static, UsbBus>,
-    usb_serial: SerialPort<'static, UsbBus>,
-    data_queue: Queue<(i16, i16, i16), 8>, 
 }
 ```
 
-Importantly, this new definition will allow us to store up to 8 readings from the accelerometer that can then be read and sent over serial to the receiver.
+The important part of this code snippet is the use of the `take_from_bytes_crc32`. This function call not only uses the COBS formatting from Postcard to find the start of a message, but then decodes the CRC value and returns an error if the CRC value does not match. 
 
-Once the hardware has been initialized, we can write another async function whose responsibility is to poll the accelerometer and put the data into our queue. 
+This initial plotting implementation is crude because the gui rendering and the data processing are running in the same thread and often block eachother. In practice, this conflict means that the GUI will not update until a new message is received. 
+
+### Creating a Data Simulation Tool
+
+Step Diffs: [Simulated data sender](https://github.com/mattantseng-0/rust_cpx_accel_rx_tx/commit/2f8e833c14b1df30a829949ab864d790d8150a15)
+
+While this step is not necessary to receive and plot data from the CPX, we are now going to write another simple rust script to emulate the data being sent from the CPX and feed it into our receiver. One reason for doing this is to be able to update and improve the receiver without needing access to the CPX hardware. Another reason for creating this simulation tool is to allow for stress testing and fault injection in the data stream to make sure that our receiver is robust. 
+
+In order to get serial data from one application to another, we will use Socat to virtually connect 2 devices. Run the following command: 
+
+```bash
+socat -d -d pty,raw,echo=0 pty,raw,echo=0
+```
+
+The output will look similar to the following:
+
+```bash
+ % socat -d -d pty,raw,echo=0 pty,raw,echo=0
+2026/06/24 11:06:14 socat[79889] N PTY is /dev/ttys038
+2026/06/24 11:06:14 socat[79889] N PTY is /dev/ttys049
+2026/06/24 11:06:14 socat[79889] N starting data transfer loop with FDs [5,5] and [7,7]
+```
+
+We now have a connection between `/dev/ttys038` and `/dev/ttys049`. 
+
+To setup a separate executable that can still be run with cargo, we will add the following to your Cargo.toml:
+
+```
+default-run = "plotting_app"
+```
+
+The above line will allow you to still use `cargo run` to execute the primary plotting application. Then, to run the tx_sim application, use the command: 
+```
+cargo run --bin tx_sim
+```
+
+You will need to manually update the `port_name` definition to match the devices that Socat connected.
+
+Once we have our tx_sim setup, we can inject some errors to test the reTwo of the cases that we can check are:
+- Message misalignment
+- Corrupted message
+
+In order to test for message misalignment, we include the following code in our TX sim:
 
 ```rust
-#[task(local = [lis3dh], shared = [data_queue])]
-async fn poll_accel(mut cx: poll_accel::Context)
+// every 10th message inject some garbage data. This is to test that the rx 
+// can resync after a misalignment
+if counter % 10 == 0
 {
-    loop {
+    port.write_all(&random_bytes)
+    .expect("Write failed");
+}
+```
 
+To test the ability of the receiver to recover from a corrupted message, we include the following code in the TX sim: 
 
-        if let Ok(sample) = cx.local.lis3dh.accel_raw() {
-            cx.shared.data_queue.lock(|queue| {
-                let _ = queue.enqueue((sample.x, sample.y, sample.z));
-            });
-        } else {
-            cx.shared.data_queue.lock(|queue| {
-                let _ = queue.enqueue((-1i16, -1i16, -1i16));
-            });
-        }
+```rust
+let serialized_slice = postcard::to_slice_crc32(
+    &tx_msg, 
+    &mut output_buffer, 
+    CRC_ALGO.digest()
+).expect("Serialization failed");
+
+// Every 100 messages flip a byte after the crc calculation. 
+// This is to check the rx behavior on corrupted data
+if counter % 100 == 0 {
+    serialized_slice[3] = !serialized_slice[3];
+}
+```
+## Part 4: Improving Performance
+
+### Separate Render and RX Threads
+Step Diffs: [Multithread plotting and rx app](https://github.com/mattantseng-0/rust_cpx_accel_rx_tx/commit/a9d67beaec5dd6c873f75036c51d31448ed19b31)
+
+Currently, the plotting app is receiving data and plotting it in the same thread. An easy update to improve performance is to separate the message handling and the rendering into two threads. To perform this separation, we can make use of the Multiple Producer Single Consumer (MPSC) module. Consider the following example code: 
+
+Producer:
+```rust
+pub fn spawn_test_producer_thread(tx: Sender<AccMsg>) {
+    let mut my_counter: u16 = 0;
     
-        Mono::delay(1u64.millis()).await;
+    loop {
+        println!("Producer count: {}", my_counter);
+        let mut tx_msg = AccMsg::new();
+        tx_msg.counter = my_counter;
+
+        tx.send(tx_msg);
+        
+        my_counter = my_counter.wrapping_add(1);
+        thread::sleep(Duration::from_millis(1));
+
+    }
+
+}
+```
+
+Consumer:
+```rust
+pub fn spawn_test_consumer_thread(rx: Receiver<AccMsg>) {
+
+    println!("spawn_test_consumer_thread loop");
+
+    loop {
+        while let Ok(msg) = rx.try_recv() {
+            println!("Consumer count: {}", msg.counter);
+        }
+        thread::sleep(Duration::from_millis(1));
     }
 }
 ```
 
+Main:
+```rust
+fn main() {
 
+    let (tx, rx) = mpsc::channel::<AccMsg>();
 
----
-## Phase 3: Receiving Data
----
-## Phase 4: Improving Performance
+    println!("Hello, world!");
+
+    let producer = thread::spawn(move || spawn_test_producer_thread(tx));
+    let consumer = thread::spawn(move || spawn_test_consumer_thread(rx));
+
+    producer.join().unwrap();
+    consumer.join().unwrap();
+}
+```
+
+With these three code snippets, the producer pushes an AccMsg into a the mpsc channel that is then used by the consumer. While this is a trivial example, the concepts can be applied to our plotting app. The restructure to split up the receiver into multiple threads is also an excellent time to break out the functionality of our app.
+
+Update the structure of the plotting app as follows:
+
+```
+plotting_app
+├── Cargo.toml
+└── src
+    ├── bin
+    │   └── tx_sim.rs
+    ├── app.rs
+    ├── main.rs
+    └── serial.rs
+```
+
+The code in `app.rs` will be responsible for rendering the graph. `main.rs` will be responsible for spawning the threads and `serial.rs` will be responsible for receiving the data. 
+
+### Runtime Arguments
+
+Step Diffs: [Runtime Arguments](https://github.com/mattantseng-0/rust_cpx_accel_rx_tx/commit/e2f1d6681a100c32b996c825bf8ea0ad852cdb0a)
+
+The next improvement we can make is to use runtime arguments to select the device used by the receiver. Using runtime arguments means that we won't have to use hardcoded values.
+
+By adding this snippet, we can make the device selection configurable and provide a help menu in case we want to add more information in the future: 
+
+```rust
+while let Some(arg) = args.next() {
+    match arg.as_str() {
+        "-d" | "--device" => {
+            if let Some(val) = args.next() {
+                serial_interface = Some(val);
+            } else {
+                eprintln!("No device given with device flag");
+                std::process::exit(1);
+                
+            }
+        }
+        _ | "-h" | "--help" => {
+            println!("-h help: print help menu\n-d device: /dev/ttySomeDevice");
+            std::process::exit(1);
+
+        }
+    }
+}
+```
