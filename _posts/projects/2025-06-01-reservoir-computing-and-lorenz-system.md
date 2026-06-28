@@ -1,5 +1,5 @@
 ---
-title: "Hands-On Tutorial: Leaky Integrator Echo State Network"
+title: "Tutorial: Leaky Integrator Echo State Network"
 layout: gridlay
 date: 2025-06-01
 sitemap: false
@@ -7,7 +7,7 @@ permalink: /projects/reservoir_computing_lorenz
 thumbnail: "/images/project_images/rc_and_lorenz/lorenz_3d.png"
 ---
 
-# Hands-On Tutorial: Leaky Integrator Echo State Network
+# Tutorial: Leaky Integrator Echo State Network
 
 ## Motivation
 
