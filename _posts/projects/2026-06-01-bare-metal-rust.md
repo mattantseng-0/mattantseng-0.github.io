@@ -1,5 +1,5 @@
 ---
-title: "Bare Metal Rust Application"
+title: "Tutorial: Rust USB Communication and Accelerometer Data Logging"
 layout: gridlay
 date: 2026-06-01
 sitemap: false
@@ -7,7 +7,7 @@ permalink: /projects/bare_metal_rust_application
 thumbnail: "/images/project_images/bare_metal_rust/accel_data.png"
 ---
 
-# Bare-Metal Rust Application
+# Tutorial: USB Communication and Accelerometer Data Logging
 
 <img src="../../images/project_images/bare_metal_rust/accel_data.gif" alt="Accelerometer Data" width="100%"/>
 
