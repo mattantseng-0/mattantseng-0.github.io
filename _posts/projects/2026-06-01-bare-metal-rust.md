@@ -1,5 +1,5 @@
 ---
-title: "Tutorial: USB Communication and Accelerometer Data Logging"
+title: "Tutorial: Rust USB Communication and Accelerometer Data Logging"
 layout: gridlay
 date: 2026-06-01
 sitemap: false
